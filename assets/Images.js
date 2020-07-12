@@ -1,3 +1,3 @@
 export default Images = {
-    mine: require('./img/mine.png')
+    urchin: require('./img/urchin.jpg')
 }

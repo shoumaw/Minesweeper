@@ -1,10 +1,11 @@
 /* eslint-disable prettier/prettier */
-import React, {Component, useRef} from 'react';
+import React, {useState, useRef} from 'react';
 import {StyleSheet, View, Alert, Button} from 'react-native';
 import Constants from '../utils/AppConstants';
 import Cell from '../components/Cell';
-
+import Modal from '../components/Modal'
 export default Board = () => {
+  const [isGameOver, setIsGameOver] = useState(false)
   // on mount initialize the board
   const boardWidth = Constants.CELL_SIZE * Constants.BOARD_SIZE;
   const grid = Array.apply(null, Array(Constants.BOARD_SIZE)).map(
@@ -15,8 +16,7 @@ export default Board = () => {
     },
   );
   const onStung = () => {
-    console.log("Dead")
-    Alert.alert('Ooops, you stepped on a urchin! What a shame');
+    setIsGameOver(true)
     for (let i = 0; i < Constants.BOARD_SIZE; i++) {
       for (let j = 0; j < Constants.BOARD_SIZE; j++) {
         grid[i][j].current.uncoverWithoutSideEffects();
@@ -25,7 +25,6 @@ export default Board = () => {
   };
 
   const uncoverNeighbors = (x, y) => {
-    //console.log("Uncovering neighbors")
     for (let i = -1; i <= 1; i++) {
       for (let j = -1; j <= 1; j++) {
         if (
@@ -42,7 +41,6 @@ export default Board = () => {
   };
 
   const onUncover = (x, y) => {
-    //console.log("Uncover this cell")
     let urchinsAround = 0;
     for (let i = -1; i <= 1; i++) {
       for (let j = -1; j <= 1; j++) {
@@ -69,7 +67,6 @@ export default Board = () => {
   const renderBoard = () => {
     return Array.apply(null, Array(Constants.BOARD_SIZE)).map((el, rowIdx) => {
         let cellList = Array.apply(null, Array(Constants.BOARD_SIZE)).map((el, colIdx) => {
-          //console.log("Heree")
           grid[colIdx][rowIdx] = useRef()
             return <Cell
                 onUncover={onUncover}
@@ -82,7 +79,6 @@ export default Board = () => {
                 ref={grid[colIdx][rowIdx]}
             />
         });
-        //console.log("cellList",cellList)
         return (
             <View key={rowIdx} style={{ width: boardWidth, height: Constants.CELL_SIZE, flexDirection: 'row'}}>
                 {cellList}
@@ -94,7 +90,7 @@ export default Board = () => {
 }
 
   const resetGame = () => {
-    console.log("here we go")
+    setIsGameOver(false)
     for (let i = 0; i < Constants.BOARD_SIZE; i++) {
       for (let j = 0; j < Constants.BOARD_SIZE; j++) {
         grid[i][j].current.reset();
@@ -113,7 +109,7 @@ export default Board = () => {
         }}>
         {renderBoard()}
       </View>
-      <Button title="New Game" onPress={resetGame} />
+      <Modal isGameOver={isGameOver} resetGame={resetGame}/>
     </View>
   );
   }

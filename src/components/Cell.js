@@ -8,54 +8,50 @@ import {
 } from 'react-native';
 import Images from '../../assets/Images';
 export default Cell = forwardRef(({ onUncover: onUncoverCb, onStung, width, height, x, y }, ref) => {
-    const [isUncovered, changeVisibility] = useState(false)
+    const [isUncovered, changeVisibility] = useState({visibility: false, user: false})
     const [isUrchin, setUrchinProbability] = useState(Math.random() < 0.2)
     const [urchinsAround, setUrchinsAround] = useState(null)
-    const [performSideEffects, setPerformSideEffects] = useState(false)
     const isInitialMount = useRef(true);
     useEffect(() => {
         if (isInitialMount.current) {
-            console.log("Mount")
-
             isInitialMount.current = false;
-        } else if (performSideEffects) {
+        } else if(isUncovered.user) {
+
             if (isUrchin) {
-                console.log("Stung")
 
-                onStung();
-            } else {
-                console.log("uncover cb")
+            onStung();
+        } else {
 
-                onUncoverCb(x, y);
-            }
-        }
+            onUncoverCb(x, y);
+        }   
+    }
 
-    }, )
+    },[isUncovered] )
     const onUncover = (userInitiated) => {
-        if (isUncovered) {
-            ;
-        }return
+
+        if (isUncovered.visibility) {
+            return;
+        }
 
         if (!userInitiated && isUrchin) {
             return;
         }
-        //console.log("changing visibility")
-        changeVisibility(true)
-        setPerformSideEffects(true)
+        changeVisibility({visibility: true, user: true})
+ 
     }
     const uncoverWithoutSideEffects = () => {
-        if (isUncovered){
+        if (isUncovered.visibility){
             return;
         }
 
-        changeVisibility(true)
-        setPerformSideEffects(false)
+        changeVisibility({visibility: true, user: false})
 
     }
     useImperativeHandle(ref, () => ({
-        onUncover,
+        onUncover, 
+        uncoverWithoutSideEffects,
         reset : () => {
-            changeVisibility(false)
+            changeVisibility({visibility: false, user: false})
             setUrchinProbability(Math.random() < 0.2)
             setUrchinsAround(null)
         },
@@ -70,22 +66,21 @@ export default Cell = forwardRef(({ onUncover: onUncoverCb, onStung, width, heig
 
     const cell = () => 
     {
-        if (!isUncovered) {
-            return (<TouchableOpacity onPress={() => { onUncover(true); }}>
+        if (!isUncovered.visibility) {
+            return (
+                <TouchableOpacity onPress={() => onUncover(true) }>
                     <View style={[styles.cell, { width: width, height: height }]}>
 
                     </View>
-                </TouchableOpacity>)
+                </TouchableOpacity>
+            )
         } else {
             let content = null;
             if (isUrchin) {
-                //console.log("Noo")
 
-                content = <Image source={Images.mine} style={{ width: width / 2, height: height / 2 }} resizeMode="contain" />
+                content = <Image source={Images.urchin} style={{ width: width / 2, height: height / 2 }} resizeMode="contain" />
                 
             } else if (urchinsAround) {
-                //console.log("Maybee")
-
                 content = <Text>{urchinsAround}</Text>
                 
             }
@@ -110,7 +105,7 @@ const styles = StyleSheet.create({
         borderBottomColor: '#7d7d7d'
     },
     cellUncovered: {
-        backgroundColor: '#bdbdbd',
+        backgroundColor: '#ffffff',
         borderWidth: 1,
         borderColor: '#7d7d7d',
         alignItems: 'center',
