@@ -6,27 +6,31 @@ import {
     Image,
     Text
 } from 'react-native';
+import Constants from '../utils/AppConstants';
 import Images from '../../assets/Images';
-export default Cell = forwardRef(({ onUncover: onUncoverCb, onStung, width, height, x, y }, ref) => {
+export default Cell = forwardRef(({ onUncover: onUncoverCb, setTotalNumUrchins, onGameOver, width, height, x, y }, ref) => {
     const [isUncovered, changeVisibility] = useState({visibility: false, user: false})
-    const [isUrchin, setUrchinProbability] = useState(Math.random() < 0.2)
+    const [isUrchin, setUrchinProbability] = useState(Math.random() < 0.1)
     const [urchinsAround, setUrchinsAround] = useState(null)
     const isInitialMount = useRef(true);
+    // Incerement the total number of urchins on the board
+    if(isUrchin){
+        setTotalNumUrchins()
+    }
+    // OnUncover side effect. Its either gameover or call the parent uncover callback
     useEffect(() => {
         if (isInitialMount.current) {
             isInitialMount.current = false;
         } else if(isUncovered.user) {
-
             if (isUrchin) {
-
-            onStung();
+                onGameOver(Constants.YOU_LOSE);
         } else {
-
             onUncoverCb(x, y);
         }   
     }
 
     },[isUncovered] )
+    // On uncover change visibility 
     const onUncover = (userInitiated) => {
 
         if (isUncovered.visibility) {
@@ -37,8 +41,9 @@ export default Cell = forwardRef(({ onUncover: onUncoverCb, onStung, width, heig
             return;
         }
         changeVisibility({visibility: true, user: true})
- 
+
     }
+    // Uncover all cells when the game is over
     const uncoverWithoutSideEffects = () => {
         if (isUncovered.visibility){
             return;
@@ -47,6 +52,7 @@ export default Cell = forwardRef(({ onUncover: onUncoverCb, onStung, width, heig
         changeVisibility({visibility: true, user: false})
 
     }
+    // Ref functions to be called using the parent component
     useImperativeHandle(ref, () => ({
         onUncover, 
         uncoverWithoutSideEffects,
@@ -55,8 +61,8 @@ export default Cell = forwardRef(({ onUncover: onUncoverCb, onStung, width, heig
             setUrchinProbability(Math.random() < 0.2)
             setUrchinsAround(null)
         },
-        getUrchinsAround: () =>{
-            return urchinsAround
+        isUrchin: () =>{
+            return isUrchin
         },
         setUrchinsAround: (urchinsAround) =>{
             setUrchinsAround(urchinsAround)

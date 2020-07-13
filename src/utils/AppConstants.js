@@ -5,4 +5,6 @@ export default Constants = {
   MAX_HEIGHT: Dimensions.get("screen").height,
   BOARD_SIZE: 10,
   CELL_SIZE: 30,
+  YOU_LOSE: "You lose",
+  YOU_WIN: "You win"
 }

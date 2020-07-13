@@ -1,75 +1,135 @@
-import React, {useState, useEffect} from 'react';
-import {StyleSheet, View, TouchableHighlight, Animated, Easing, Text, Dimensions} from 'react-native';
+import React, { useState, useEffect } from 'react';
+import { StyleSheet, View, TouchableHighlight, Animated, Easing, Text, Dimensions } from 'react-native';
 const deviceHeight = Dimensions.get('window').height
 const deviceWidth = Dimensions.get('window').width
-export default Modal = ({isGameOver, resetGame}) => {
- 
-    const [modalY, setModalY] = useState(new Animated.Value(deviceHeight))
+export default Modal = ({ isGameOver, gameOverText, resetGame }) => {
+    const [trans, setTrans] = useState(new Animated.Value(0))
+    const [pulse, setPulse] = useState(new Animated.Value(0))
     useEffect(() => {
-        if(isGameOver){
+        if (isGameOver) {
             openModal()
         }
 
     }, [isGameOver])
     const openModal = () => {
-        Animated.timing(modalY, {
-            duration: 300,
-            toValue: -deviceHeight / 3,
-            useNativeDriver: true,
-            easing: Easing.out
-        }).start();
+        Animated.loop(
+            Animated.sequence([
+                Animated.timing(trans, {
+                    toValue: 1,
+                    duration: 1000,
+                    useNativeDriver: true,
+
+                }),
+                Animated.timing(pulse, {
+                    toValue: 1,
+                    duration: 100,
+                    useNativeDriver: true,
+
+                }),
+                Animated.timing(pulse, {
+                    toValue: 0,
+                    duration: 100,
+                    useNativeDriver: true,
+
+                }),
+                Animated.timing(pulse, {
+                    toValue: 1,
+                    duration: 100,
+                    useNativeDriver: true,
+
+                }),
+                Animated.timing(pulse, {
+                    toValue: 0,
+                    duration: 100,
+                    useNativeDriver: true,
+
+                }),
+                Animated.timing(pulse, {
+                    toValue: 1,
+                    duration: 100,
+                    useNativeDriver: true,
+
+                })
+            ]),
+            {
+                iterations: 1
+            }
+        ).start();
+
     }
-    
+
     const closeModal = () => {
-        Animated.timing(modalY, {
-            duration: 300,
-            toValue: deviceHeight,
-            useNativeDriver: true
+        Animated.timing(trans, {
+            duration: 100,
+            toValue: 0,
+            useNativeDriver: true,
+            easing: Easing.linear
         }).start();
         resetGame()
     }
-    
     return (
-            <Animated.View style={[ styles.modal, { transform: [{translateY: modalY}] }]}>
-                <View style ={styles.textView}>                
-                    <Text style={styles.text} >You losee</Text>
-                </View>
-                <TouchableHighlight onPress={ closeModal } style={ styles.button }>
-                    <Text style={ styles.buttonText }>Retry</Text>
-                </TouchableHighlight>
-            </Animated.View>
-    ); 
-   };
-   
-   const styles = StyleSheet.create({
+        <Animated.View style={[styles.modal, {
+            transform: [
+                {
+                    translateY: trans.interpolate({
+                        inputRange: [0, 1],
+                        outputRange: [deviceHeight, 0]
+                    })
+                },
+                {
+                    scaleX: pulse.interpolate({
+                        inputRange: [0, 1],
+                        outputRange: [1, 1.4]
+                    })
+                },
+                {
+                    scaleY: pulse.interpolate({
+                        inputRange: [0, 1],
+                        outputRange: [1, 1.4]
+                    })
+                }]
+        },
+        ]}>
+            <View style={styles.textView}>
+                <Text style={styles.text} >{gameOverText}</Text>
+            </View>
+            <TouchableHighlight onPress={closeModal} style={styles.button}>
+                <Text style={styles.buttonText}>Retry</Text>
+            </TouchableHighlight>
+        </Animated.View>
+    );
+};
+
+const styles = StyleSheet.create({
     container: {
-      justifyContent: 'center'
+        justifyContent: 'center'
     },
-    text:{
+    text: {
         textAlign: 'center',
         fontWeight: 'bold',
-        fontSize: 20, 
+        fontSize: 20,
     },
-    textView:{
-        backgroundColor:'white',
+    textView: {
+        backgroundColor: 'white',
         height: 40,
         justifyContent: 'center',
-        alignItems: 'center',  
+        alignItems: 'center',
     },
     button: {
-      borderRadius: 4,
-      backgroundColor: 'green',
-      alignItems: 'center',
-      height: 40,
-      justifyContent: 'center',
+        borderRadius: 4,
+        backgroundColor: 'green',
+        alignItems: 'center',
+        height: 40,
+        justifyContent: 'center',
     },
     buttonText: {
-      color: 'white'
+        color: 'white'
     },
     modal: {
-      height: deviceHeight/8,
-      width: deviceWidth/3,
-      justifyContent: 'center',
-      borderRadius: 4,
+        position: 'absolute',
+        height: deviceHeight / 8,
+        width: deviceHeight / 3,
+        justifyContent: 'center',
+        borderRadius: 4,
     }
-  });
+});
