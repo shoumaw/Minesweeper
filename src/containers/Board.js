@@ -1,6 +1,6 @@
 /* eslint-disable prettier/prettier */
-import React, {useState, useRef} from 'react';
-import {StyleSheet, View, Alert, Button} from 'react-native';
+import React, { useState, useRef } from 'react';
+import { StyleSheet, View, Alert, Button } from 'react-native';
 import Constants from '../utils/AppConstants';
 import Cell from '../components/Cell';
 import Modal from '../components/Modal'
@@ -23,7 +23,7 @@ export default Board = () => {
     },
   );
   // If game over uncover all cells and show pop up
-  const onGameOver= (text) => {
+  const onGameOver = (text) => {
     setIsGameOver(true)
     gameOverText = text
     for (let i = 0; i < Constants.BOARD_SIZE; i++) {
@@ -66,7 +66,7 @@ export default Board = () => {
         }
       }
     }
-    if((grid.length * grid[0].length) - totalNumUncovered === totalNumUrchins){
+    if ((grid.length * grid[0].length) - totalNumUncovered === totalNumUrchins) {
       onGameOver(Constants.YOU_WIN)
     }
     else if (urchinsAround) {
@@ -89,29 +89,29 @@ export default Board = () => {
 
   const renderBoard = () => {
     return Array.apply(null, Array(Constants.BOARD_SIZE)).map((el, rowIdx) => {
-        let cellList = Array.apply(null, Array(Constants.BOARD_SIZE)).map((el, colIdx) => {
-          grid[colIdx][rowIdx] = useRef()
-            return <Cell
-                onUncover={onUncover}
-                onGameOver={onGameOver}
-                setTotalNumUrchins={() => totalNumUrchins++}
-                key={colIdx}
-                width={Constants.CELL_SIZE}
-                height={Constants.CELL_SIZE}
-                x={colIdx}
-                y={rowIdx}
-                ref={grid[colIdx][rowIdx]}
-            />
-        });
-        return (
-            <View key={rowIdx} style={{ width: boardWidth, height: Constants.CELL_SIZE, flexDirection: 'row'}}>
-                {cellList}
-            </View>
-        )
+      let cellList = Array.apply(null, Array(Constants.BOARD_SIZE)).map((el, colIdx) => {
+        grid[colIdx][rowIdx] = useRef()
+        return <Cell
+          onUncover={onUncover}
+          onGameOver={onGameOver}
+          setTotalNumUrchins={() => totalNumUrchins++}
+          key={colIdx}
+          width={Constants.CELL_SIZE}
+          height={Constants.CELL_SIZE}
+          x={colIdx}
+          y={rowIdx}
+          ref={grid[colIdx][rowIdx]}
+        />
+      });
+      return (
+        <View key={rowIdx} style={{ width: boardWidth, height: Constants.CELL_SIZE, flexDirection: 'row' }}>
+          {cellList}
+        </View>
+      )
     });
 
 
-}
+  }
 
 
 
@@ -126,7 +126,7 @@ export default Board = () => {
         }}>
         {renderBoard()}
       </View>
-      <Modal isGameOver={isGameOver} gameOverText={gameOverText} resetGame={resetGame}/>
+      <Modal isGameOver={isGameOver} gameOverText={gameOverText} resetGame={resetGame} />
     </View>
   );
 }

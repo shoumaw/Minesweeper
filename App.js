@@ -11,14 +11,14 @@ import {
   SafeAreaView,
   StyleSheet,
   ScrollView,
-  StatusBar,Text
+  StatusBar, Text
 } from 'react-native';
 
 import { Colors } from 'react-native/Libraries/NewAppScreen';
 import Board from './src/containers/Board'
 const App = () => {
   return (
-        <Board />
+    <Board />
   );
 };
 

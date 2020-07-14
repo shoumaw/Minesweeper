@@ -1,4 +1,4 @@
-import React, { useState , useEffect, useRef, forwardRef, useImperativeHandle } from 'react';
+import React, { useState, useEffect, useRef, forwardRef, useImperativeHandle } from 'react';
 import {
     StyleSheet,
     View,
@@ -9,27 +9,27 @@ import {
 import Constants from '../utils/AppConstants';
 import Images from '../../assets/Images';
 export default Cell = forwardRef(({ onUncover: onUncoverCb, setTotalNumUrchins, onGameOver, width, height, x, y }, ref) => {
-    const [isUncovered, changeVisibility] = useState({visibility: false, user: false})
+    const [isUncovered, changeVisibility] = useState({ visibility: false, user: false })
     const [isUrchin, setUrchinProbability] = useState(Math.random() < 0.1)
     const [urchinsAround, setUrchinsAround] = useState(null)
     const isInitialMount = useRef(true);
     // Incerement the total number of urchins on the board
-    if(isUrchin){
+    if (isUrchin) {
         setTotalNumUrchins()
     }
     // OnUncover side effect. Its either gameover or call the parent uncover callback
     useEffect(() => {
         if (isInitialMount.current) {
             isInitialMount.current = false;
-        } else if(isUncovered.user) {
+        } else if (isUncovered.user) {
             if (isUrchin) {
                 onGameOver(Constants.YOU_LOSE);
-        } else {
-            onUncoverCb(x, y);
-        }   
-    }
+            } else {
+                onUncoverCb(x, y);
+            }
+        }
 
-    },[isUncovered] )
+    }, [isUncovered])
     // On uncover change visibility 
     const onUncover = (userInitiated) => {
 
@@ -40,41 +40,40 @@ export default Cell = forwardRef(({ onUncover: onUncoverCb, setTotalNumUrchins, 
         if (!userInitiated && isUrchin) {
             return;
         }
-        changeVisibility({visibility: true, user: true})
+        changeVisibility({ visibility: true, user: true })
 
     }
     // Uncover all cells when the game is over
     const uncoverWithoutSideEffects = () => {
-        if (isUncovered.visibility){
+        if (isUncovered.visibility) {
             return;
         }
 
-        changeVisibility({visibility: true, user: false})
+        changeVisibility({ visibility: true, user: false })
 
     }
     // Ref functions to be called using the parent component
     useImperativeHandle(ref, () => ({
-        onUncover, 
+        onUncover,
         uncoverWithoutSideEffects,
-        reset : () => {
-            changeVisibility({visibility: false, user: false})
+        reset: () => {
+            changeVisibility({ visibility: false, user: false })
             setUrchinProbability(Math.random() < 0.2)
             setUrchinsAround(null)
         },
-        isUrchin: () =>{
+        isUrchin: () => {
             return isUrchin
         },
-        setUrchinsAround: (urchinsAround) =>{
+        setUrchinsAround: (urchinsAround) => {
             setUrchinsAround(urchinsAround)
         }
-      }));
+    }));
 
 
-    const cell = () => 
-    {
+    const cell = () => {
         if (!isUncovered.visibility) {
             return (
-                <TouchableOpacity onPress={() => onUncover(true) }>
+                <TouchableOpacity onPress={() => onUncover(true)}>
                     <View style={[styles.cell, { width: width, height: height }]}>
 
                     </View>
@@ -84,21 +83,21 @@ export default Cell = forwardRef(({ onUncover: onUncoverCb, setTotalNumUrchins, 
             let content = null;
             if (isUrchin) {
 
-                content = <Image source={Images.urchin} style={{ width: width / 2, height: height / 2 }} resizeMode="contain" />
-                
+                content = <Image id="urchin-image" source={Images.urchin} style={{ width: width / 2, height: height / 2 }} resizeMode="contain" />
+
             } else if (urchinsAround) {
-                content = <Text>{urchinsAround}</Text>
-                
+                content = <Text id="num-urchins">{urchinsAround}</Text>
+
             }
-            return (<View style={[styles.cellUncovered, { width: width, height: height }]}>
+            return (<View id="cell-view" style={[styles.cellUncovered, { width: width, height: height }]}>
                 {content}
-            </View> )
+            </View>)
         }
     }
-    
-    return ( cell())
 
-    
+    return (cell())
+
+
 })
 
 const styles = StyleSheet.create({
